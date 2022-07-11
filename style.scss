@@ -1,0 +1,111 @@
+
+// Oldal címe....
+$titleSize: 22px;
+$titleColor: darkgreen;
+
+// sakktábla mező alapszínek
+$cellBaseLight: #ffce9e;
+$cellBaseDark: #d18b47;
+
+// betük
+$textColor: blue;
+$textSize: 1.25em;
+
+// számok
+$numberColor: green;
+$numberSize: 1.25em;
+
+// megoldások száma
+$monrColor: red;
+$monrSize: 24px;
+$monrWeight: bold; 
+
+$cellbaseHoverTime: 0.3s;
+
+$checkboardCellSize: 50px;
+
+// ************************************************
+// MIXIN START
+
+/*
+    Tábla körüli betük és számok 
+*/
+@mixin betuk_szamok ($color, $size) {
+    color: $color;
+    font-size: $size;
+    font-weight: bold;
+    @include d_flex_center();
+}
+
+/*
+    Flex minden középre
+*/
+@mixin d_flex_center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+// MIXIN END
+// ************************************************
+
+
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.mytitle {
+    font-size: $titleSize;
+    color: $titleColor;
+}
+
+#sakktabla {
+    display: grid;
+    grid-template-columns: repeat(10, $checkboardCellSize);
+    grid-template-rows: repeat(10, $checkboardCellSize);
+
+    border: outset 6px orangered;
+
+    // jaték mezők kiemelése ha rávisszük az egeret
+    div[class*="cellbase"] {
+        &:hover {
+            opacity: 0.5;
+            transition: opacity $cellbaseHoverTime;
+        }
+    }
+}
+
+.celltext {
+    // sakktábla ABC
+    @include betuk_szamok($textColor, $textSize);
+
+}
+.cellnumber {
+    // sakktábla számok
+    @include betuk_szamok($numberColor, $numberSize);
+}
+
+.cellbase_light {
+    background-color: $cellBaseLight;
+}
+.cellbase_dark {
+    background-color: $cellBaseDark;
+}
+
+.megoldasok {
+    color: $monrColor;
+    font-size: $monrSize;
+    font-weight: $monrWeight;
+    padding-top: 25px;
+}
+
+.queen {
+    content: url("./images/black_queen.png");
+    position: absolute;
+    width: $checkboardCellSize;
+    height: $checkboardCellSize;
+}
