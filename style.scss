@@ -108,4 +108,5 @@ body {
     position: absolute;
     width: $checkboardCellSize;
     height: $checkboardCellSize;
+    z-index: 1;
 }

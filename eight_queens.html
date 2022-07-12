@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,22 +8,47 @@
     <title>Nyolc Királynő</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="mytitle">
-        <p>Helyezz el egy Vezért a táblán kattintással!</p>        
+        <p>Helyezz el egy Vezért a táblán kattintással!</p>
     </div>
     <div id="sakktabla"></div>
     <div class="megoldasok"></div>
-    
+
     <script>
 
-        // alap tábla elkészítése
         let sakktabla = document.querySelector("#sakktabla");
-        let sClassName = "";
-        let iFieldIndex = 0;
+        let sClassName = "";    // sakktábla elemeinek css osztálynevei
+        let iFieldIndex = 0;    // mező id + queensFinal index
+        let queensFinal = [];   // 8db vezér a táblán
+        let megoldasok = [];    // lehetséges megoldások (92db)
 
-        for ( let row = 0; row < 10; row++ ) {
-            for ( let col = 0; col < 10; col++ ) {
+        // 92 megoldás.....
+        let allasok = [
+            "1 5 8 6 3 7 2 4", "1 6 8 3 7 4 2 5", "1 7 4 6 8 2 5 3", "1 7 5 8 2 4 6 3", "2 4 6 8 3 1 7 5",
+            "2 5 7 1 3 8 6 4", "2 5 7 4 1 8 6 3", "2 6 1 7 4 8 3 5", "2 6 8 3 1 4 7 5", "2 7 3 6 8 5 1 4",
+            "2 7 5 8 1 4 6 3", "2 8 6 1 3 5 7 4", "3 1 7 5 8 2 4 6", "3 5 2 8 1 7 4 6", "3 5 2 8 6 4 7 1",
+            "3 5 7 1 4 2 8 6", "3 5 8 4 1 7 2 6", "3 6 2 5 8 1 7 4", "3 6 2 7 1 4 8 5", "3 6 2 7 5 1 8 4",
+            "3 6 4 1 8 5 7 2", "3 6 4 2 8 5 7 1", "3 6 8 1 4 7 5 2", "3 6 8 1 5 7 2 4", "3 6 8 2 4 1 7 5",
+            "3 7 2 8 5 1 4 6", "3 7 2 8 6 4 1 5", "3 8 4 7 1 6 2 5", "4 1 5 8 2 7 3 6", "4 1 5 8 6 3 7 2",
+            "4 2 5 8 6 1 3 7", "4 2 7 3 6 8 1 5", "4 2 7 3 6 8 5 1", "4 2 7 5 1 8 6 3", "4 2 8 5 7 1 3 6",
+            "4 2 8 6 1 3 5 7", "4 6 1 5 2 8 3 7", "4 6 8 2 7 1 3 5", "4 6 8 3 1 7 5 2", "4 7 1 8 5 2 6 3",
+            "4 7 3 8 2 5 1 6", "4 7 5 2 6 1 3 8", "4 7 5 3 1 6 8 2", "4 8 1 3 6 2 7 5", "4 8 1 5 7 2 6 3",
+            "4 8 5 3 1 7 2 6", "5 1 4 6 8 2 7 3", "5 1 8 4 2 7 3 6", "5 1 8 6 3 7 2 4", "5 2 4 6 8 3 1 7",
+            "5 2 4 7 3 8 6 1", "5 2 6 1 7 4 8 3", "5 2 8 1 4 7 3 6", "5 3 1 6 8 2 4 7", "5 3 1 7 2 8 6 4",
+            "5 3 8 4 7 1 6 2", "5 7 1 3 8 6 4 2", "5 7 1 4 2 8 6 3", "5 7 2 4 8 1 3 6", "5 7 2 6 3 1 4 8",
+            "5 7 2 6 3 1 8 4", "5 7 4 1 3 8 6 2", "5 8 4 1 3 6 2 7", "5 8 4 1 7 2 6 3", "6 1 5 2 8 3 7 4",
+            "6 2 7 1 3 5 8 4", "6 2 7 1 4 8 5 3", "6 3 1 7 5 8 2 4", "6 3 1 8 4 2 7 5", "6 3 1 8 5 2 4 7",
+            "6 3 5 7 1 4 2 8", "6 3 5 8 1 4 2 7", "6 3 7 2 4 8 1 5", "6 3 7 2 8 5 1 4", "6 3 7 4 1 8 2 5",
+            "6 4 1 5 8 2 7 3", "6 4 2 8 5 7 1 3", "6 4 7 1 3 5 2 8", "6 4 7 1 8 2 5 3", "6 8 2 4 1 7 5 3",
+            "7 1 3 8 6 4 2 5", "7 2 4 1 8 5 3 6", "7 2 6 3 1 4 8 5", "7 3 1 6 8 5 2 4", "7 3 8 2 5 1 6 4",
+            "7 4 2 5 8 1 3 6", "7 4 2 8 6 1 3 5", "7 5 3 1 6 8 2 4", "8 2 4 1 7 5 3 6", "8 2 5 3 1 7 4 6",
+            "8 3 1 6 2 5 7 4", "8 4 1 3 6 2 7 5"];
+
+        // alap tábla elkészítése és a 8db vezér létrehozása
+        for (let row = 0; row < 10; row++) {
+            for (let col = 0; col < 10; col++) {
                 // mező létrehozása
                 let field = document.createElement("div");
                 field.width = "100%";
@@ -30,27 +56,34 @@
                 sClassName = "";
 
                 // szövegek kiírása felülre és alulra
-                if ( ( row == 0 || row == 9 ) && ( col > 0 && col < 9 ) ) {
+                if ((row == 0 || row == 9) && (col > 0 && col < 9)) {
                     // mehet az alsó vagy a felső sorba az ABC
                     sClassName = "celltext"
                     field.innerText = String.fromCharCode(96 + col);
-                } else if ( ( col == 0 || col == 9 ) && ( row > 0 && row < 9 ) ) {
+                } else if ((col == 0 || col == 9) && (row > 0 && row < 9)) {
                     // számok kiírása bal és jobb oldalra
                     sClassName = "cellnumber";
                     field.innerText = 9 - row;
-                } else if ( ( row > 0 && row < 9 ) && ( col > 0 && col < 9 ) ) {
+                } else if ((row > 0 && row < 9) && (col > 0 && col < 9)) {
                     // alapértelmezett mezők, egyedi azonosítóval
-                    if ( ( row % 2 && col % 2 ) || ( row % 2 == 0 && col % 2 == 0 ) ) {
+                    if ((row % 2 && col % 2) || (row % 2 == 0 && col % 2 == 0)) {
                         sClassName = "cellbase_light";
                     } else {
                         sClassName = "cellbase_dark";
                     }
                     field.id = iFieldIndex;
+
+                    // vezérek létrehozása
+                    queensFinal[iFieldIndex] = document.createElement("img");
+                    queensFinal[iFieldIndex].className = "queen";
+                    queensFinal[iFieldIndex].style.display = "none";
+                    sakktabla.appendChild(queensFinal[iFieldIndex]);
+
                     iFieldIndex++;
                     field.addEventListener("click", fieldSelect);
                 }
 
-                if ( sClassName.length > 0 ) {
+                if (sClassName.length > 0) {
                     field.className = sClassName;
                 }
                 sakktabla.appendChild(field);
@@ -61,35 +94,7 @@
             Kiválasztott mezőre kell elhelyezni az első vezért, 
             aztán ki kell keresni a lehetséges megoldásokat
         */
-        
-        // 92 megoldás.....
-        let allasok = [ 
-            "1 5 8 6 3 7 2 4", "1 6 8 3 7 4 2 5", "1 7 4 6 8 2 5 3", "1 7 5 8 2 4 6 3", "2 4 6 8 3 1 7 5", 
-            "2 5 7 1 3 8 6 4", "2 5 7 4 1 8 6 3", "2 6 1 7 4 8 3 5", "2 6 8 3 1 4 7 5", "2 7 3 6 8 5 1 4", 
-            "2 7 5 8 1 4 6 3", "2 8 6 1 3 5 7 4", "3 1 7 5 8 2 4 6", "3 5 2 8 1 7 4 6", "3 5 2 8 6 4 7 1", 
-            "3 5 7 1 4 2 8 6", "3 5 8 4 1 7 2 6", "3 6 2 5 8 1 7 4", "3 6 2 7 1 4 8 5", "3 6 2 7 5 1 8 4", 
-            "3 6 4 1 8 5 7 2", "3 6 4 2 8 5 7 1", "3 6 8 1 4 7 5 2", "3 6 8 1 5 7 2 4", "3 6 8 2 4 1 7 5", 
-            "3 7 2 8 5 1 4 6", "3 7 2 8 6 4 1 5", "3 8 4 7 1 6 2 5", "4 1 5 8 2 7 3 6", "4 1 5 8 6 3 7 2", 
-            "4 2 5 8 6 1 3 7", "4 2 7 3 6 8 1 5", "4 2 7 3 6 8 5 1", "4 2 7 5 1 8 6 3", "4 2 8 5 7 1 3 6", 
-            "4 2 8 6 1 3 5 7", "4 6 1 5 2 8 3 7", "4 6 8 2 7 1 3 5", "4 6 8 3 1 7 5 2", "4 7 1 8 5 2 6 3", 
-            "4 7 3 8 2 5 1 6", "4 7 5 2 6 1 3 8", "4 7 5 3 1 6 8 2", "4 8 1 3 6 2 7 5", "4 8 1 5 7 2 6 3", 
-            "4 8 5 3 1 7 2 6", "5 1 4 6 8 2 7 3", "5 1 8 4 2 7 3 6", "5 1 8 6 3 7 2 4", "5 2 4 6 8 3 1 7", 
-            "5 2 4 7 3 8 6 1", "5 2 6 1 7 4 8 3", "5 2 8 1 4 7 3 6", "5 3 1 6 8 2 4 7", "5 3 1 7 2 8 6 4", 
-            "5 3 8 4 7 1 6 2", "5 7 1 3 8 6 4 2", "5 7 1 4 2 8 6 3", "5 7 2 4 8 1 3 6", "5 7 2 6 3 1 4 8", 
-            "5 7 2 6 3 1 8 4", "5 7 4 1 3 8 6 2", "5 8 4 1 3 6 2 7", "5 8 4 1 7 2 6 3", "6 1 5 2 8 3 7 4", 
-            "6 2 7 1 3 5 8 4", "6 2 7 1 4 8 5 3", "6 3 1 7 5 8 2 4", "6 3 1 8 4 2 7 5", "6 3 1 8 5 2 4 7",
-            "6 3 5 7 1 4 2 8", "6 3 5 8 1 4 2 7", "6 3 7 2 4 8 1 5", "6 3 7 2 8 5 1 4", "6 3 7 4 1 8 2 5", 
-            "6 4 1 5 8 2 7 3", "6 4 2 8 5 7 1 3", "6 4 7 1 3 5 2 8", "6 4 7 1 8 2 5 3", "6 8 2 4 1 7 5 3", 
-            "7 1 3 8 6 4 2 5", "7 2 4 1 8 5 3 6", "7 2 6 3 1 4 8 5", "7 3 1 6 8 5 2 4", "7 3 8 2 5 1 6 4", 
-            "7 4 2 5 8 1 3 6", "7 4 2 8 6 1 3 5", "7 5 3 1 6 8 2 4", "8 2 4 1 7 5 3 6", "8 2 5 3 1 7 4 6", 
-            "8 3 1 6 2 5 7 4", "8 4 1 3 6 2 7 5" ];
-
-        // ide mennek a lehetséges megoldások
-        let megoldasok = [];
-
-        let queens = [];
-
-        function fieldSelect (){
+        function fieldSelect() {
             // tábla
             let sakktabla = document.querySelector("#sakktabla");
 
@@ -102,14 +107,20 @@
 
             // a kiválasztott mezőhöz illő összes állás kikeresése a tömbből
             for (let i = 0; i < allasok.length; i++) {
-                if ( allasok[ i ][ 2 * ( oszlop - 1 ) ] == sor ) {
+                if (allasok[i][2 * (oszlop - 1)] == sor) {
                     //console.log(allasok[ i ]);
-                    megoldasok.push(allasok[ i ]);
-                }                
+                    megoldasok.push(allasok[i]);
+                }
             }
 
+            // van megoldás?
+            if (megoldasok.length < 1) {
+                alert("Ebből a pozícióból nincs megoldás!");
+                return false;
+            };
+
+            // megjelenítjük a pozícióhoz tartozó lehetséges megoldások számát
             document.querySelector(".megoldasok").innerText = "Megoldások száma: " + megoldasok.length;
-            //console.log(sor + " - " + oszlop);
 
             // vezérek létrehozása és elhelyezése a kiválasztott
             // lehetőségből (string) pl.: "8 4 1 3 6 2 7 5" : 
@@ -121,21 +132,21 @@
             // összes szóköz eltávolítása a megoldásból (trim nem jó mert az csak a string elejéről és a végéről veszi le!!)
             queenPosition = queenPosition.replace(/\s+/g, "");
 
-            // let cc = document.getElementById("0");
-            // console.log(cc.offsetTop);
-            // console.log(cc.offsetLeft);
+            // első (A8) mező pozíciója, ehez képest számolom ki a vezérek helyét
+            let cc = document.getElementById("0");
+            let ctopoff = cc.offsetTop;
+            let cleftoff = cc.offsetLeft;
 
-            for ( let i = 0; i < 8; i++ ) {
-                let queen = document.createElement("img");
-                queen.className = "queen";
-                queen.style.top = Number(queenPosition.substr(i, 1)) * 50 + (134 - 50) + "px";
-                queen.style.left = Number(i * 50) + 397 + "px";
-                sakktabla.appendChild(queen);
+            // vezérek mehetnek a táblára
+            for (let i = 0; i < 8; i++) {
+                queensFinal[i].style.top = Number(queenPosition.substr(i, 1)) * 50 + (ctopoff - 50) + "px";
+                queensFinal[i].style.left = Number(i * 50) + cleftoff + "px";
+                queensFinal[i].style.display = "block";
             };
 
- 
         };
 
     </script>
 </body>
+
 </html>
