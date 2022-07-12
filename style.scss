@@ -1,6 +1,6 @@
 
 // Oldal címe....
-$titleSize: 22px;
+$titleSize: 16px;
 $titleColor: darkgreen;
 
 // sakktábla mező alapszínek
@@ -100,7 +100,6 @@ body {
     color: $monrColor;
     font-size: $monrSize;
     font-weight: $monrWeight;
-    padding-top: 25px;
 }
 
 .queen {
@@ -109,4 +108,24 @@ body {
     width: $checkboardCellSize;
     height: $checkboardCellSize;
     z-index: 1;
+}
+
+.tableWrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+.megoldasokWrapper {
+    display: flex;
+    flex-direction: column;
+    min-width: 30%;
+    justify-content: flex-start;
+    align-items: center;
+
+    select {
+        height: 30px;
+        font-size: 18px;
+        font-weight: 600;
+        margin-top: 25px;
+    }
 }
